@@ -105,7 +105,7 @@ if choice == '1':
     # ball_surface[0] = pygame.transform.scale(ball_surface[0], (41, 30))
     # ball_surface[1] = pygame.transform.scale(ball_surface[1], (41, 30))
     # ball_surface[2] = pygame.transform.scale(ball_surface[2], (41, 30))
-    ball_rect = ball_surface[0].get_rect(center=(500, 360))
+    ball_rect = ball_surface[0].get_rect(center=(500, 100))
 
     # ground surface
     ground_surface = pygame.image.load('Assets/ground1.png').convert()
@@ -175,12 +175,16 @@ elif choice == '2':
     def random_no():
         return random.randint(-280, 50)
 
+    def lvlup():
+        global pipe_speed, pipe_space
+        pipe_space -= 10
+        pipe_speed -= 1
 
     # Pipes mover
     def PipesMover():
         for j in range(3):
-            pipe_rect_up[j] = pipe_rect_up[j].move((-5, 0))
-            pipe_rect_down[j] = pipe_rect_down[j].move((-5, 0))
+            pipe_rect_up[j] = pipe_rect_up[j].move((pipe_speed, 0))
+            pipe_rect_down[j] = pipe_rect_down[j].move((pipe_speed, 0))
 
 
     # pipes printer
@@ -196,7 +200,7 @@ elif choice == '2':
             if pipe_rect_up[l].right < 0:
                 pipe_y = random_no()
                 pipe_rect_up[l] = pipe_surface_up[l].get_rect(center=(1290, pipe_y))
-                pipe_rect_down[l] = pipe_surface_down[l].get_rect(center=(1290, pipe_y + 850))
+                pipe_rect_down[l] = pipe_surface_down[l].get_rect(center=(1290, pipe_y + pipe_space))
 
 
     # Collision Detector
@@ -242,6 +246,9 @@ elif choice == '2':
     gravity = 0.25
     frame = 0
     frame_speed = 0.2
+    lvlup_counter = 0
+    pipe_space = 850
+    pipe_speed = -5
 
     # clock
     clock = pygame.time.Clock()
@@ -259,7 +266,7 @@ elif choice == '2':
     ball_surface[0] = pygame.transform.scale(ball_surface[0], (41, 30))
     ball_surface[1] = pygame.transform.scale(ball_surface[1], (41, 30))
     ball_surface[2] = pygame.transform.scale(ball_surface[2], (41, 30))
-    ball_rect = ball_surface[0].get_rect(center=(500, 360))
+    ball_rect = ball_surface[0].get_rect(center=(500, 100))
 
     # ball2
     ball2_surface1 = pygame.image.load('Assets/bird2.png').convert_alpha()
@@ -270,7 +277,7 @@ elif choice == '2':
     ball2_surface[0] = pygame.transform.scale(ball2_surface[0], (41, 30))
     ball2_surface[1] = pygame.transform.scale(ball2_surface[1], (41, 30))
     ball2_surface[2] = pygame.transform.scale(ball2_surface[2], (41, 30))
-    ball2_rect = ball_surface[0].get_rect(center=(400, 360))
+    ball2_rect = ball_surface[0].get_rect(center=(400, 100))
 
     # ground surface
     ground_surface = pygame.image.load('Assets/ground1.png').convert()
@@ -288,7 +295,7 @@ elif choice == '2':
         pipe_surface_down.append(pygame.image.load('Assets/Pipe.png').convert())
         pipey = random_no()
         pipe_rect_up.append(pipe_surface_up[i].get_rect(center=(1000 + i * 432, pipey)))
-        pipe_rect_down.append(pipe_surface_down[i].get_rect(center=(1000 + i * 432, pipey + 850)))
+        pipe_rect_down.append(pipe_surface_down[i].get_rect(center=(1000 + i * 432, pipey + pipe_space)))
 
     while True:
         for event in pygame.event.get():
@@ -306,13 +313,16 @@ elif choice == '2':
         speed1 = speed1 + gravity
         speed2 = speed2 + gravity
         frame = frame + frame_speed
+        if lvlup_counter > 2000:
+            lvlup_counter = 0
+            lvlup()
         if int(frame) > 2:
             frame = 0
         ball_rect = ball_rect.move((0, int(speed1)))
         ball2_rect = ball2_rect.move((0, int(speed2)))
         if ground_rect.right <= 0:
             ground_rect.left = 0
-        ground_rect = ground_rect.move(-5, 0)
+        ground_rect = ground_rect.move(pipe_speed, 0)
         PipesMover()
         PipesRegenerator()
         screen.fill(white)
