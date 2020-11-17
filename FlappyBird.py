@@ -86,11 +86,6 @@ if choice == '1':
         highscore_file = open("Highscores.txt", "a")
         highscore_file.write("\n" + name + " " + str(int(score)))
         highscore_file.close()
-        
-    def Highscore_indiv(name):
-        highscore_file = open(name + ".txt", "a")
-        highscore_file.write(" " + str(int(score)))
-        highscore_file.close()
 
     # colors
     black = (0, 0, 0)
@@ -193,7 +188,6 @@ if choice == '1':
             text = "Game Over " + name
             GameOver()
             Highscore_write()
-            Highscore_indiv(name)
             pygame.display.flip()
             pygame.time.wait(1000)
             pygame.quit()
@@ -383,34 +377,18 @@ elif choice == '2':
         clock.tick(60)
 
 elif choice == '3':
-    print("\n1.common highscores \n2.individual highscores")
-    ch = int(input())
-    if ch == 1:
-        def Sorting_scores(e):
-            return int(e[1])
-        highscore_file = open("Highscores.txt", "r+")
-        index = 0
-        scores = []
-        for i in highscore_file.readlines():
-            scores.append(i.split())
-            index = index+1
+    def Sorting_scores(e):
+        return int(e[1])
+    highscore_file = open("Highscores.txt", "r+")
+    index = 0
+    scores = []
+    for i in highscore_file.readlines():
+        scores.append(i.split())
+        index = index+1
 
-        scores.sort(reverse=True, key=Sorting_scores)
-        print("\n-----------------------HighScores-----------------------")
-        for index in scores:
-            print(index[0] + " - " + index[1])
-        input("\nPress any key to exit")
-    
-    elif ch == 2:
-        def disp_score(name):
-            highscore_file = open(name + ".txt", "r+")
-            for i in highscore_file.readlines():
-                scores = i.split()
+    scores.sort(reverse=True, key=Sorting_scores)
+    print("\n-----------------------HighScores-----------------------")
+    for index in scores:
+        print(index[0] + " - " + index[1])
+    input("\nPress any key to exit")
 
-            scores.sort(reverse = True)    
-            print("\n-----------------------HighScores-----------------------")
-            for i in scores:    
-                print(i)
-                
-        name = input()
-        disp_score(name)       
