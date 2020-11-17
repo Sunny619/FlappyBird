@@ -12,6 +12,9 @@ if choice == '1':
     def random_no():
         return random.randint(-280, 50)
 
+    def random_no2():
+        return random.randint(100, 400)
+
     #Level UP
     def lvlup():
         global pipe_speed, pipe_space
@@ -20,9 +23,12 @@ if choice == '1':
 
     # Pipes mover
     def PipesMover():
+        global enemy_rect
         for j in range(3):
             pipe_rect_up[j] = pipe_rect_up[j].move((pipe_speed, 0))
             pipe_rect_down[j] = pipe_rect_down[j].move((pipe_speed, 0))
+
+        enemy_rect = enemy_rect.move((pipe_speed, enemy_y_switch))
 
 
     # pipes printer
@@ -31,24 +37,36 @@ if choice == '1':
             screen.blit(pipe_surface_up[k], pipe_rect_up[k])
             screen.blit(pygame.transform.flip(pipe_surface_down[k], False, True), pipe_rect_down[k])
 
+        screen.blit(enemy, enemy_rect)
 
     # pipes regenrator
     def PipesRegenerator():
+        global enemy_rect, flag
         for l in range(3):
             if pipe_rect_up[l].right < 0:
                 pipe_y = random_no()
                 pipe_rect_up[l] = pipe_surface_up[l].get_rect(center=(1290, pipe_y))
                 pipe_rect_down[l] = pipe_surface_down[l].get_rect(center=(1290, pipe_y + pipe_space))
+                if(random.randint(0, 4) == 1) and flag != 0:
+                    flag = 0
+                    enemy_rect = enemy.get_rect(center=(pipe_rect_down[l].x + 250, random_no2()))
 
+        if enemy_rect.right < 0:
+            enemy_rect = enemy.get_rect(center=(1000, -100))
+            flag = 1
 
     # Collison Detector
     def CollisonDetector():
+
         for m in range(3):
             if ball_rect.colliderect(pipe_rect_up[m]):
                 return 1
             if ball_rect.colliderect(pipe_rect_down[m]):
                 return 1
         if ball_rect.bottom >= 620 or ball_rect.top <= 0:
+            return 1
+
+        if ball_rect.colliderect(enemy_rect):
             return 1
 
     # Score Text
@@ -87,7 +105,9 @@ if choice == '1':
     lvlup_counter = 0
     pipe_space = 850
     pipe_speed = -5
-
+    enemy_y = 0
+    enemy_y_switch = 2
+    flag = 1
     # clock
     clock = pygame.time.Clock()
 
@@ -111,6 +131,10 @@ if choice == '1':
     ground_surface = pygame.image.load('Assets/ground1.png').convert()
     ground_surface1 = pygame.image.load('Assets/ground1.png').convert()
     ground_rect = ground_surface.get_rect(bottomleft=(0, 720))
+
+    # obstacle
+    enemy = pygame.image.load('Assets/enemy.png').convert()
+    enemy_rect = enemy.get_rect(center=(1000, -100))
 
     # pipe surface
     pipe_surface_up = []
@@ -136,6 +160,11 @@ if choice == '1':
         frame = frame + frame_speed
         score = score + 0.01
         lvlup_counter = lvlup_counter + 1
+        enemy_y = enemy_y + enemy_y_switch
+        if enemy_y == 40:
+            enemy_y_switch = -2
+        if enemy_y == -40:
+            enemy_y_switch = 2
         if int(frame) > 2:
             frame = 0
         ball_rect = ball_rect.move((0, int(speed)))
@@ -313,6 +342,7 @@ elif choice == '2':
         speed1 = speed1 + gravity
         speed2 = speed2 + gravity
         frame = frame + frame_speed
+
         if lvlup_counter > 2000:
             lvlup_counter = 0
             lvlup()
