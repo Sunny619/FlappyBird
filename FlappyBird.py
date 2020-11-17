@@ -1,7 +1,7 @@
 import pygame
 import sys
 import random
-
+import os.path
 # UI
 choice = input("Press 1 for Single Player Mode\nPress 2 for Two-Player Mode\nPress 3 for Highscores")
 if choice == '1':
@@ -81,11 +81,17 @@ if choice == '1':
         ren = font.render(text, 0, black)
         screen.blit(ren, (400, 300))
 
-    #Writing Highscores
+    # Writing Highscores
     def Highscore_write():
         highscore_file = open("Highscores.txt", "a")
         highscore_file.write("\n" + name + " " + str(int(score)))
         highscore_file.close()
+
+    # Writing individual Highscores
+    def Highscore_indiv():
+        ind_highscore_file = open(name + ".txt", "a")
+        ind_highscore_file.write(" " + str(int(score)))
+        ind_highscore_file.close()
 
     # colors
     black = (0, 0, 0)
@@ -133,7 +139,7 @@ if choice == '1':
     ground_rect = ground_surface.get_rect(bottomleft=(0, 720))
 
     # obstacle
-    enemy = pygame.image.load('Assets/enemy.png').convert()
+    enemy = pygame.image.load('Assets/enemy.png').convert_alpha()
     enemy_rect = enemy.get_rect(center=(1000, -100))
 
     # pipe surface
@@ -188,6 +194,7 @@ if choice == '1':
             text = "Game Over " + name
             GameOver()
             Highscore_write()
+            Highscore_indiv()
             pygame.display.flip()
             pygame.time.wait(1000)
             pygame.quit()
@@ -377,18 +384,39 @@ elif choice == '2':
         clock.tick(60)
 
 elif choice == '3':
-    def Sorting_scores(e):
-        return int(e[1])
-    highscore_file = open("Highscores.txt", "r+")
-    index = 0
-    scores = []
-    for i in highscore_file.readlines():
-        scores.append(i.split())
-        index = index+1
+    print("\n1.Global Highscores \n2.Individual Highscores")
+    ch = int(input())
+    if ch == 1:
+        def Sorting_scores(e):
+            return int(e[1])
 
-    scores.sort(reverse=True, key=Sorting_scores)
-    print("\n-----------------------HighScores-----------------------")
-    for index in scores:
-        print(index[0] + " - " + index[1])
-    input("\nPress any key to exit")
+
+        highscore_file = open("Highscores.txt", "r+")
+        index = 0
+        scores = []
+        for i in highscore_file.readlines():
+            scores.append(i.split())
+            index = index + 1
+
+        scores.sort(reverse=True, key=Sorting_scores)
+        print("\n-----------------------HighScores-----------------------")
+        for index in scores:
+            print(index[0] + " - " + index[1])
+        input("\nPress any key to exit")
+    elif ch == 2:
+        print("Enter Your Name:")
+        name = input()
+        if os.path.isfile(name + ".txt"):
+            ind_highscore_file = open(name + ".txt", "r+")
+            for i in ind_highscore_file.readlines():
+                scores = i.split()
+
+            scores.sort(reverse=True)
+            print("\n-----------------------HighScores-----------------------")
+            for i in scores:
+                print(i)
+        else:
+            print("\nSorry, You do not have any highscores")
+        input("\nPress any key to exit")
+
 
