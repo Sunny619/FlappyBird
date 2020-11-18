@@ -388,8 +388,10 @@ elif choice == '3':
     ch = int(input())
     if ch == 1:
         def Sorting_scores(e):
-            return int(e[1])
+            return e[0]
 
+        def Sorting_scores2(e):
+            return int(e[1])
 
         highscore_file = open("Highscores.txt", "r+")
         index = 0
@@ -398,7 +400,19 @@ elif choice == '3':
             scores.append(i.split())
             index = index + 1
 
-        scores.sort(reverse=True, key=Sorting_scores)
+        index = 0
+        scores.sort(key=Sorting_scores)
+        length_scores = len(scores)-1
+        while index < length_scores:
+            if scores[index][0] == scores[index+1][0]:
+                length_scores = length_scores - 1
+                if int(scores[index][1]) >= int(scores[index + 1][1]):
+                    scores.pop(index+1)
+                else:
+                    scores.pop(index)
+            else:
+                index = index+1
+        scores.sort(reverse=True, key=Sorting_scores2)
         print("\n-----------------------HighScores-----------------------")
         for index in scores:
             print(index[0] + " - " + index[1])
